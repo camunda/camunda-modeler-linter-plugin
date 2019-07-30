@@ -4,6 +4,8 @@
 
 [bpmnlint](https://github.com/bpmn-io/bpmnlint/) as a plugin for the [Camunda Modeler](https://github.com/camunda/camunda-modeler/).
 
+![Screenshot of the plug-in](./docs/screenshot.png)
+
 
 ## Overriding Provided Rules
 
