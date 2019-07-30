@@ -13,7 +13,7 @@ You may override this via your own Camunda Modeler client plug-in as shown below
 
 ```javascript
 import {
-  registerClientPlugin
+  registerBpmnJSPlugin
 } from 'camunda-modeler-plugin-helpers';
 
 import customLinterConfig from './.bpmnlintrc';
