@@ -1,12 +1,24 @@
 import {
-    registerBpmnJSPlugin,
-    registerClientPlugin
+  registerBpmnJSPlugin,
+  registerClientPlugin
 } from 'camunda-modeler-plugin-helpers';
 
 import lintingModule from 'bpmn-js-bpmnlint';
 
-import config from '../.bpmnlintrc';
+import defaultConfig from '../.bpmnlintrc';
 
-registerBpmnJSPlugin(lintingModule);
+registerClientPlugin(config => {
 
-registerClientPlugin({ bpmnlint: config }, 'bpmn.modeler.linting')
+  const {
+    additionalModules,
+    ...rest
+  } = config;
+
+  return {
+    ...rest,
+    additionalModules: [].concat(additionalModules || [], lintingModule),
+    linting: {
+      bpmnlint: defaultConfig
+    }
+  }
+}, 'bpmn.modeler.configure');
