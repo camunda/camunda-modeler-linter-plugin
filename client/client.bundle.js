@@ -312,9 +312,9 @@ var emptyConfig = {
 
 
 function Linting(
-  config, bpmnjs, canvas,
-  elementRegistry, eventBus,
-  overlays
+    config, bpmnjs, canvas,
+    elementRegistry, eventBus,
+    overlays
 ) {
 
   this._bpmnjs = bpmnjs;
@@ -361,6 +361,7 @@ function Linting(
 
   this._init();
 }
+
 Linting.prototype.setLinterConfig = function(linterConfig) {
 
   if (!linterConfig.config || !linterConfig.resolver) {
@@ -422,7 +423,6 @@ Linting.prototype.toggleLinting = function() {
 };
 
 Linting.prototype.activateLinting = function() {
-
   this.setActive(true);
 };
 
@@ -465,18 +465,18 @@ Linting.prototype.update = function() {
         update = {},
         add = {};
 
-    for (var id in self._issues) {
-      if (!newIssues[id]) {
-        remove[id] = self._issues[id];
+    for (var id1 in self._issues) {
+      if (!newIssues[id1]) {
+        remove[id1] = self._issues[id1];
       }
     }
 
-    for (var id in newIssues) {
-      if (!self._issues[id]) {
-        add[id] = newIssues[id];
+    for (var id2 in newIssues) {
+      if (!self._issues[id2]) {
+        add[id2] = newIssues[id2];
       } else {
-        if (newIssues[id] !== self._issues[id]) {
-          update[id] = newIssues[id];
+        if (newIssues[id2] !== self._issues[id2]) {
+          update[id2] = newIssues[id2];
         }
       }
     }
@@ -527,7 +527,7 @@ Linting.prototype.createElementIssues = function(elementId, elementIssues) {
   var position = { top: OFFSET_TOP, right: OFFSET_RIGHT };
 
   elementIssues = Object(min_dash__WEBPACK_IMPORTED_MODULE_1__["groupBy"])(elementIssues, function(elementIssue) {
-    return elementIssue.category
+    return elementIssue.category;
   });
 
   var errors = elementIssues.error,
@@ -2370,7 +2370,7 @@ function reduce(collection, iterator, result) {
  */
 
 function every(collection, matcher) {
-  return reduce(collection, function (matches, val, key) {
+  return !!reduce(collection, function (matches, val, key) {
     return matches && matcher(val, key);
   }, true);
 }
