@@ -27,7 +27,7 @@
     "webpack-cli": "^3.3.7"
   },
   "dependencies": {
-    "bpmn-js-bpmnlint": "^0.12.1",
+    "bpmn-js-bpmnlint": "^0.12.2",
     "bpmnlint": "^6.0.0",
     "camunda-modeler-plugin-helpers": "^3.1.0",
     "min-dom": "^3.1.1"
