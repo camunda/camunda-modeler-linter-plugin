@@ -6,6 +6,10 @@ All notable changes to [camunda-modeler-linter-plugin](https://github.com/bpmn-i
 
 ___Note:__ Yet to be released changes appear here._
 
+## 0.2.0
+
+* `CHORE`: use `bpmnlint@6`
+
 ## 0.1.0
 
 _Initial version._
