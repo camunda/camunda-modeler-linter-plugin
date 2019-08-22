@@ -29,7 +29,7 @@ registerBpmnJSPlugin({
 });
 ```
 
-Please note that you must use the [bpmnlint-loader](https://github.com/nikku/bpmnlint-loader) to bundle your `.bpmnlintrc` for usage in the browser.
+Please note that you must use the [bpmnlint-loader](https://github.com/nikku/bpmnlint-loader) to bundle your [`.bpmnlintrc`](https://github.com/bpmn-io/bpmnlint#configuration) for usage in the browser.
 
 
 ## Licence
