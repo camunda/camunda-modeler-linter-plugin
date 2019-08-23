@@ -31,6 +31,8 @@ registerBpmnJSPlugin({
 
 Please note that you must use the [bpmnlint-loader](https://github.com/nikku/bpmnlint-loader) to bundle your [`.bpmnlintrc`](https://github.com/bpmn-io/bpmnlint#configuration) for usage in the browser.
 
+For a complete example, checkout the [custom-linter-rules-plugin](./examples/custom-linter-rules-plugin) that accomplishes this.
+
 
 ## Licence
 

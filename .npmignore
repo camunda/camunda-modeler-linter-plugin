@@ -1,3 +1,4 @@
 .bpmnlintrc
 .travis.yml
 webpack.config.js
+examples
