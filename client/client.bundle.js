@@ -348,9 +348,10 @@ function Linting(
   var linterConfig = config && config.bpmnlint;
 
   linterConfig && eventBus.once('diagram.init', function() {
+
     // bail out if config was already provided
     // during initialization of other modules
-    if (self.getLinterConfig()) {
+    if (self.getLinterConfig() !== emptyConfig) {
       return;
     }
 
