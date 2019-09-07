@@ -2,10 +2,10 @@ const path = require('path');
 
 module.exports = {
   mode: 'development',
-  entry: './client/client.js',
+  entry: './client/index.js',
   output: {
-    path: path.resolve(__dirname, 'client'),
-    filename: 'client.bundle.js'
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'client.js'
   },
   module: {
     rules: [

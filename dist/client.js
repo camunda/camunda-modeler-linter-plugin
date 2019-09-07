@@ -81,7 +81,7 @@
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = "./client/client.js");
+/******/ 	return __webpack_require__(__webpack_require__.s = "./client/index.js");
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -237,10 +237,10 @@ cache['bpmnlint/sub-process-blank-start-event'] = bpmnlint_rules_sub_process_bla
 
 /***/ }),
 
-/***/ "./client/client.js":
-/*!**************************!*\
-  !*** ./client/client.js ***!
-  \**************************/
+/***/ "./client/index.js":
+/*!*************************!*\
+  !*** ./client/index.js ***!
+  \*************************/
 /*! no exports provided */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -286,18 +286,35 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var bpmnlint__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(bpmnlint__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var min_dash__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! min-dash */ "./node_modules/min-dash/dist/index.esm.js");
 /* harmony import */ var min_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! min-dom */ "./node_modules/min-dom/dist/index.esm.js");
+/* harmony import */ var diagram_js_lib_util_EscapeUtil__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! diagram-js/lib/util/EscapeUtil */ "./node_modules/diagram-js/lib/util/EscapeUtil.js");
 
 
 
+
+
+function EditorActions(injector, linting) {
+  var editorActions = injector.get('editorActions', false);
+
+  editorActions && editorActions.register({
+    toggleLinting: function() {
+      linting.toggle();
+    }
+  });
+}
+
+EditorActions.$inject = [
+  'injector',
+  'linting'
+];
 
 var ErrorSvg = "<svg width=\"12\" height=\"12\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 352 512\"><path fill=\"currentColor\" d=\"M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z\"></path></svg>";
 
-var WarningSvg = "<svg width=\"12\" height=\"12\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 576 512\"><path fill=\"currentColor\" d=\"M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z\"></path></svg>";
+var WarningSvg = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"12\" height=\"12\" viewBox=\"0 0 512 512\"><path fill=\"currentColor\" d=\"M288 328.83c-45.518 0-82.419 34.576-82.419 77.229 0 42.652 36.9 77.229 82.419 77.229 45.518 0 82.419-34.577 82.419-77.23 0-42.652-36.9-77.229-82.419-77.229zM207.439 57.034l11.61 204.348c.544 9.334 8.78 16.64 18.755 16.64h100.392c9.975 0 18.211-7.306 18.754-16.64l11.611-204.348c.587-10.082-7.98-18.56-18.754-18.56H226.192c-10.775 0-19.34 8.478-18.753 18.56z\"/></svg>";
 
 var SuccessSvg = "<svg width=\"12\" height=\"12\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 512 512\"><path fill=\"currentColor\" d=\"M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z\"></path></svg>";
 
-var OFFSET_TOP = -5,
-    OFFSET_RIGHT = -5;
+var OFFSET_TOP = -7,
+    OFFSET_RIGHT = -7;
 
 var LOW_PRIORITY = 500;
 
@@ -310,13 +327,21 @@ var emptyConfig = {
   config: {}
 };
 
+var stateToIcon = {
+  error: ErrorSvg,
+  warning: WarningSvg,
+  success: SuccessSvg,
+  inactive: SuccessSvg
+};
 
 function Linting(
-    config, bpmnjs, canvas,
-    elementRegistry, eventBus,
+    bpmnjs,
+    canvas,
+    config,
+    elementRegistry,
+    eventBus,
     overlays
 ) {
-
   this._bpmnjs = bpmnjs;
   this._canvas = canvas;
   this._elementRegistry = elementRegistry;
@@ -324,7 +349,8 @@ function Linting(
   this._overlays = overlays;
 
   this._issues = {};
-  this._lintingActive = false;
+
+  this._active = config && config.active || false;
   this._linterConfig = emptyConfig;
 
   this._overlayIds = {};
@@ -332,17 +358,28 @@ function Linting(
   var self = this;
 
   eventBus.on([
+    'import.done',
     'elements.changed',
     'linting.configChanged',
     'linting.toggle'
   ], LOW_PRIORITY, function(e) {
-    if (self.lintingActive()) {
+    if (self.isActive()) {
       self.update();
     }
   });
 
+  eventBus.on('linting.toggle', function(event) {
+
+    const active = event.active;
+
+    if (!active) {
+      self._clearIssues();
+      self._updateButton();
+    }
+  });
+
   eventBus.on('diagram.clear', function() {
-    self.clearIssues();
+    self._clearIssues();
   });
 
   var linterConfig = config && config.bpmnlint;
@@ -384,27 +421,17 @@ Linting.prototype.getLinterConfig = function() {
   return this._linterConfig;
 };
 
-Linting.prototype._init = function(config) {
-  var self = this;
+Linting.prototype._init = function() {
+  this._createButton();
 
-  var button = this._button = Object(min_dom__WEBPACK_IMPORTED_MODULE_2__["domify"])(
-    '<button class="bpmn-js-bpmnlint-button inactive"></button>'
-  );
-
-  this.updateButton();
-
-  button.addEventListener('click', function() {
-    self.toggleLinting();
-  });
-
-  this._canvas.getContainer().appendChild(button);
+  this._updateButton();
 };
 
-Linting.prototype.lintingActive = function() {
-  return this._lintingActive;
+Linting.prototype.isActive = function() {
+  return this._active;
 };
 
-Linting.prototype.formatIssues = function(issues) {
+Linting.prototype._formatIssues = function(issues) {
 
   const reports = Object(min_dash__WEBPACK_IMPORTED_MODULE_1__["reduce"])(issues, function(reports, ruleReports, rule) {
 
@@ -421,33 +448,29 @@ Linting.prototype.formatIssues = function(issues) {
   });
 };
 
-Linting.prototype.toggleLinting = function() {
-  if (this.lintingActive()) {
-    this.deactivateLinting();
-  } else {
-    this.activateLinting();
-  }
+/**
+ * Toggle linting on or off.
+ *
+ * @param {boolean} [newActive]
+ *
+ * @return {boolean} the new active state
+ */
+Linting.prototype.toggle = function(newActive) {
+
+  newActive = typeof newActive === 'undefined' ? !this.isActive() : newActive;
+
+  this._setActive(newActive);
+
+  return newActive;
 };
 
-Linting.prototype.activateLinting = function() {
-  this.setActive(true);
-};
+Linting.prototype._setActive = function(active) {
 
-Linting.prototype.deactivateLinting = function() {
-  this.setActive(false);
-
-  this.clearIssues();
-
-  this.updateButton();
-};
-
-Linting.prototype.setActive = function(active) {
-
-  if (this._lintingActive === active) {
+  if (this._active === active) {
     return;
   }
 
-  this._lintingActive = active;
+  this._active = active;
 
   this._eventBus.fire('linting.toggle', { active: active });
 };
@@ -458,6 +481,12 @@ Linting.prototype.setActive = function(active) {
 Linting.prototype.update = function() {
   var self = this;
 
+  var definitions = this._bpmnjs.getDefinitions();
+
+  if (!definitions) {
+    return;
+  }
+
   var lintStart = this._lintStart = Math.random();
 
   this.lint().then(function(newIssues) {
@@ -466,7 +495,7 @@ Linting.prototype.update = function() {
       return;
     }
 
-    newIssues = self.formatIssues(newIssues);
+    newIssues = self._formatIssues(newIssues);
 
     var remove = {},
         update = {},
@@ -491,14 +520,12 @@ Linting.prototype.update = function() {
     remove = Object(min_dash__WEBPACK_IMPORTED_MODULE_1__["assign"])(remove, update);
     add = Object(min_dash__WEBPACK_IMPORTED_MODULE_1__["assign"])(add, update);
 
-    self.removeProcessIssues();
-
-    self.removeIssues(remove);
-    self.createIssues(add);
+    self._clearOverlays();
+    self._createIssues(add);
 
     self._issues = newIssues;
 
-    self.updateButton();
+    self._updateButton();
 
     self._fireComplete(newIssues);
   });
@@ -508,210 +535,210 @@ Linting.prototype._fireComplete = function(issues) {
   this._eventBus.fire('linting.completed', { issues: issues });
 };
 
-Linting.prototype.createIssues = function(issues) {
+Linting.prototype._createIssues = function(issues) {
   for (var id in issues) {
-    this.createElementIssues(id, issues[id]);
+    this._createElementIssues(id, issues[id]);
   }
 };
 
 /**
  * Create overlays for an elements issues.
  *
- * @param {String} elementId - Elements ID.
+ * @param {string} elementId - Elements ID.
  * @param {Array} elementIssues - All element issues including warnings and errors.
  */
-Linting.prototype.createElementIssues = function(elementId, elementIssues) {
-
+Linting.prototype._createElementIssues = function(elementId, elementIssues) {
   var element = this._elementRegistry.get(elementId);
 
   if (!element) {
-    // gracefully handle element not found
     return;
   }
 
-  var isProcess = element.type === 'bpmn:Process';
+  var menuPosition;
+  var position;
 
-  var position = { top: OFFSET_TOP, right: OFFSET_RIGHT };
+  if (element === this._canvas.getRootElement()) {
+    menuPosition = 'bottom-right';
 
-  elementIssues = Object(min_dash__WEBPACK_IMPORTED_MODULE_1__["groupBy"])(elementIssues, function(elementIssue) {
+    position = {
+      top: 20,
+      left: 150
+    };
+  } else {
+    menuPosition = 'top-right';
+
+    position = {
+      top: OFFSET_TOP,
+      left: OFFSET_RIGHT
+    };
+  }
+
+  var issuesByType = Object(min_dash__WEBPACK_IMPORTED_MODULE_1__["groupBy"])(elementIssues, function(elementIssue) {
     return elementIssue.category;
   });
 
-  var errors = elementIssues.error,
-      warnings = elementIssues.warn;
+  var errors = issuesByType.error,
+      warnings = issuesByType.warn;
 
-  var html = Object(min_dom__WEBPACK_IMPORTED_MODULE_2__["domify"])('<div class="bpmn-js-bpmnlint-issues"><div class="icons"></div></div>');
+  if (!errors && !warnings) {
+    return;
+  }
 
-  var icons = Object(min_dom__WEBPACK_IMPORTED_MODULE_2__["query"])('.icons', html);
+  var $html = Object(min_dom__WEBPACK_IMPORTED_MODULE_2__["domify"])(
+    '<div class="bjsl-overlay bjsl-issues-' + menuPosition + '"></div>'
+  );
 
-  var group;
+  var $icon = errors
+    ? Object(min_dom__WEBPACK_IMPORTED_MODULE_2__["domify"])('<div class="bjsl-icon bjsl-icon-error">' + ErrorSvg + '</div>')
+    : Object(min_dom__WEBPACK_IMPORTED_MODULE_2__["domify"])('<div class="bjsl-icon bjsl-icon-warning">' + WarningSvg + '</div>');
+
+  var $dropdown = Object(min_dom__WEBPACK_IMPORTED_MODULE_2__["domify"])('<div class="bjsl-dropdown"></div>');
+  var $dropdownContent = Object(min_dom__WEBPACK_IMPORTED_MODULE_2__["domify"])('<div class="bjsl-dropdown-content"></div>');
+  var $issues = Object(min_dom__WEBPACK_IMPORTED_MODULE_2__["domify"])('<div class="bjsl-issues"></div>');
+  var $issueList = Object(min_dom__WEBPACK_IMPORTED_MODULE_2__["domify"])('<ul></ul>');
+
+  $html.appendChild($icon);
+  $html.appendChild($dropdown);
+
+  $dropdown.appendChild($dropdownContent);
+  $dropdownContent.appendChild($issues);
+
+  $issues.appendChild($issueList);
 
   if (errors) {
-    icons.appendChild(Object(min_dom__WEBPACK_IMPORTED_MODULE_2__["domify"])('<span class="icon error">' + ErrorSvg + '</span>'));
-
-    group = this.createGroup(errors, 'error', 'Errors', ErrorSvg);
-
-    html.appendChild(group);
+    this._addErrors($issueList, errors);
   }
 
   if (warnings) {
-    icons.appendChild(Object(min_dom__WEBPACK_IMPORTED_MODULE_2__["domify"])('<span class="icon warning">' + WarningSvg + '</span>'));
-
-    group = this.createGroup(warnings, 'warning', 'Warnings', WarningSvg);
-
-    html.appendChild(group);
+    this._addWarnings($issueList, warnings);
   }
 
-  if (isProcess) {
-    this.createProcessIssues(html);
-  } else {
-    this._overlayIds[elementId] = this._overlays.add(element, 'bpmnlint', {
-      position: position,
-      html: html,
-      scale: {
-        min: 1,
-        max: 1
+  this._overlayIds[elementId] = this._overlays.add(element, 'linting', {
+    position: position,
+    html: $html,
+    scale: {
+      min: .9
+    }
+  });
+};
+
+Linting.prototype._addErrors = function($ul, errors) {
+
+  var self = this;
+
+  errors.forEach(function(error) {
+    self._addEntry($ul, 'error', error);
+  });
+};
+
+Linting.prototype._addWarnings = function($ul, warnings) {
+
+  var self = this;
+
+  warnings.forEach(function(error) {
+    self._addEntry($ul, 'warning', error);
+  });
+};
+
+Linting.prototype._addEntry = function($ul, state, entry) {
+
+  var rule = entry.rule,
+      message = entry.message;
+
+  var icon = stateToIcon[state];
+
+  var $entry = Object(min_dom__WEBPACK_IMPORTED_MODULE_2__["domify"])(
+    '<li class="' + state + '">' +
+      icon +
+      '<a title="' + Object(diagram_js_lib_util_EscapeUtil__WEBPACK_IMPORTED_MODULE_3__["escapeHTML"])(rule) + ': ' + Object(diagram_js_lib_util_EscapeUtil__WEBPACK_IMPORTED_MODULE_3__["escapeHTML"])(message) + '" ' +
+         'data-rule="' + Object(diagram_js_lib_util_EscapeUtil__WEBPACK_IMPORTED_MODULE_3__["escapeHTML"])(rule) + '" ' +
+         'data-message="' + Object(diagram_js_lib_util_EscapeUtil__WEBPACK_IMPORTED_MODULE_3__["escapeHTML"])(message) + '"' +
+      '>' +
+        Object(diagram_js_lib_util_EscapeUtil__WEBPACK_IMPORTED_MODULE_3__["escapeHTML"])(message) +
+      '</a>' +
+    '</li>'
+  );
+
+  $ul.appendChild($entry);
+};
+
+Linting.prototype._clearOverlays = function() {
+  this._overlays.remove({ type: 'linting' });
+
+  this._overlayIds = {};
+};
+
+Linting.prototype._clearIssues = function() {
+  this._issues = {};
+
+  this._clearOverlays();
+};
+
+Linting.prototype._setButtonState = function(state, errors, warnings) {
+  var button = this._button;
+
+  var icon = stateToIcon[state];
+
+  var html = icon + '<span>' + errors + ' Errors, ' + warnings + ' Warnings</span>';
+
+  [
+    'error',
+    'inactive',
+    'success',
+    'warning'
+  ].forEach(function(s) {
+    if (state === s) {
+      button.classList.add('bjsl-button-' + s);
+    } else {
+      button.classList.remove('bjsl-button-' + s);
+    }
+  });
+
+  button.innerHTML = html;
+};
+
+Linting.prototype._updateButton = function() {
+
+  if (!this.isActive()) {
+    this._setButtonState('inactive', 0, 0);
+
+    return;
+  }
+
+  var errors = 0,
+      warnings = 0;
+
+  for (var id in this._issues) {
+    this._issues[id].forEach(function(issue) {
+      if (issue.category === 'error') {
+        errors++;
+      } else if (issue.category === 'warn') {
+        warnings++;
       }
     });
   }
 
+  var state = (errors && 'error') || (warnings && 'warning') || 'success';
+
+  this._setButtonState(state, errors, warnings);
 };
 
-Linting.prototype.createGroup = function(issues, type, label, icon) {
+Linting.prototype._createButton = function() {
 
-  var group = Object(min_dom__WEBPACK_IMPORTED_MODULE_2__["domify"])(
-    '<div class="group">' +
-      '<div class="header ' + type + '">' + icon + label + '</div>' +
-    '</div>'
+  var self = this;
+
+  this._button = Object(min_dom__WEBPACK_IMPORTED_MODULE_2__["domify"])(
+    '<button class="bjsl-button bjsl-button-inactive" title="Toggle linting"></button>'
   );
 
-  issues.forEach(function(issue) {
-    var collapsable = Object(min_dom__WEBPACK_IMPORTED_MODULE_2__["domify"])(
-      '<div class="collapsable ' + type + '">' +
-      issue.message +
-      '</div>'
-    );
-
-    group.appendChild(collapsable);
+  this._button.addEventListener('click', function() {
+    self.toggle();
   });
 
-  return group;
-};
-
-Linting.prototype.removeIssues = function(issues) {
-  var overlayId;
-
-  for (var id in issues) {
-    if (id === 'Process') {
-      this.removeProcessIssues();
-    } else {
-      overlayId = this._overlayIds[id];
-
-      // ignore process
-      if (overlayId) {
-        this._overlays.remove(overlayId);
-      }
-    }
-  }
-};
-
-/**
- * Removes all overlays and clears cached issues.
- */
-Linting.prototype.clearIssues = function() {
-  var overlayId;
-
-  for (var id in this._overlayIds) {
-    overlayId = this._overlayIds[id];
-
-    this._overlays.remove(overlayId);
-  }
-
-  this._issues = {};
-
-  this.removeProcessIssues();
-};
-
-/**
- * Sets button state to reflect if linting is active.
- *
- * @param {String} state
- */
-Linting.prototype.setButtonState = function(state, html) {
-  if (state === 'success') {
-    this._button.classList.add('success');
-    this._button.classList.remove('error');
-    this._button.classList.remove('inactive');
-    this._button.classList.remove('warning');
-  } else if (state === 'error') {
-    this._button.classList.add('error');
-    this._button.classList.remove('inactive');
-    this._button.classList.remove('success');
-    this._button.classList.remove('warning');
-  } else if (state === 'warning') {
-    this._button.classList.add('warning');
-    this._button.classList.remove('error');
-    this._button.classList.remove('inactive');
-    this._button.classList.remove('success');
-  } else if (state === 'inactive') {
-    this._button.classList.add('inactive');
-    this._button.classList.remove('error');
-    this._button.classList.remove('success');
-    this._button.classList.remove('warning');
-  }
-
-  this._button.innerHTML = html;
-};
-
-Linting.prototype.updateButton = function() {
-  if (this._lintingActive) {
-    var errors = 0,
-        warnings = 0;
-
-    for (var id in this._issues) {
-      this._issues[id].forEach(function(issue) {
-        if (issue.category === 'error') {
-          errors++;
-        } else if (issue.category === 'warn') {
-          warnings++;
-        }
-      });
-    }
-
-    if (errors) {
-      this.setButtonState('error', ErrorSvg + '<span>' + errors + ' Errors, ' + warnings + ' Warnings</span>');
-    } else if (warnings) {
-      this.setButtonState('warning', WarningSvg + '<span>' + errors + ' Errors, ' + warnings + ' Warnings</span>');
-    } else {
-      this.setButtonState('success', SuccessSvg + '<span>0 Errors, 0 Warnings</span>');
-    }
-
-  } else {
-    this.setButtonState('inactive', SuccessSvg + '<span>0 Errors, 0 Warnings</span>');
-  }
-
-};
-
-Linting.prototype.createProcessIssues = function(html) {
-  var container = this._canvas.getContainer();
-
-  html.classList.add('bpmn-js-bpmnlint-process-issues');
-
-  container.appendChild(html);
-};
-
-Linting.prototype.removeProcessIssues = function() {
-  var container = this._canvas.getContainer();
-
-  var html = Object(min_dom__WEBPACK_IMPORTED_MODULE_2__["query"])('.bpmn-js-bpmnlint-process-issues', container);
-
-  if (html) {
-    Object(min_dom__WEBPACK_IMPORTED_MODULE_2__["remove"])(html);
-  }
+  this._canvas.getContainer().appendChild(this._button);
 };
 
 Linting.prototype.lint = function() {
-
   var definitions = this._bpmnjs.getDefinitions();
 
   var linter = new bpmnlint__WEBPACK_IMPORTED_MODULE_0__["Linter"](this._linterConfig);
@@ -720,33 +747,18 @@ Linting.prototype.lint = function() {
 };
 
 Linting.$inject = [
-  'config.linting',
   'bpmnjs',
   'canvas',
+  'config.linting',
   'elementRegistry',
   'eventBus',
   'overlays'
 ];
 
-function EditorActions(injector, linting) {
-  var editorActions = injector.get('editorActions', false);
-
-  editorActions && editorActions.register({
-    toggleLinting: function() {
-      linting.toggleLinting();
-    }
-  });
-}
-
-EditorActions.$inject = [
-  'injector',
-  'linting'
-];
-
 var index = {
   __init__: [ 'linting', 'lintingEditorActions' ],
   linting: [ 'type', Linting ],
-  lintingEditorActions: ['type', EditorActions]
+  lintingEditorActions: ['type', EditorActions ]
 };
 
 /* harmony default export */ __webpack_exports__["default"] = (index);
@@ -1173,13 +1185,23 @@ function normalizeConfig(config, pkg) {
 
   const rules = config.rules || {};
 
+  const rulePrefix = pkg.startsWith('bpmnlint-plugin-') && pkg.replace('bpmnlint-plugin-', '');
+
   const validatedRules = Object.keys(rules).reduce((normalizedRules, name) => {
 
     const value = rules[name];
 
-    // prefix local rule definition
-    if (name.indexOf('bpmnlint/') === 0) {
-      name = name.substring('bpmnlint/'.length);
+    // drop bpmnlint prefix, if existing
+    if (name.startsWith('bpmnlint/')) {
+      name = name.replace('bpmnlint/', '');
+    } else
+
+    if (rulePrefix) {
+
+      // prefix local rule definition
+      if (!name.startsWith(rulePrefix)) {
+        name = `${rulePrefix}/${name}`;
+      }
     }
 
     normalizedRules[name] = value;
@@ -1632,7 +1654,7 @@ module.exports = function() {
       'bpmn:Gateway',
       'bpmn:SubProcess',
       'bpmn:Event'
-    ])) {
+    ]) || node.triggeredByEvent) {
       return;
     }
 
@@ -1650,6 +1672,7 @@ module.exports = function() {
 
 };
 
+
 /***/ }),
 
 /***/ "./node_modules/bpmnlint/rules/no-duplicate-sequence-flows.js":
@@ -1664,7 +1687,7 @@ const {
 } = __webpack_require__(/*! bpmnlint-utils */ "./node_modules/bpmnlint-utils/dist/index.esm.js");
 
 /**
- * A rule that verifies that there exists no disconnected
+ * A rule that verifies that there are no disconnected
  * flow elements, i.e. elements without incoming
  * _or_ outgoing sequence flows
  */
@@ -2131,6 +2154,152 @@ function getModelerDirectory() {
 function getPluginsDirectory() {
   return window.getPluginsDirectory();
 }
+
+/***/ }),
+
+/***/ "./node_modules/css.escape/css.escape.js":
+/*!***********************************************!*\
+  !*** ./node_modules/css.escape/css.escape.js ***!
+  \***********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global) {/*! https://mths.be/cssescape v1.5.1 by @mathias | MIT license */
+;(function(root, factory) {
+	// https://github.com/umdjs/umd/blob/master/returnExports.js
+	if (true) {
+		// For Node.js.
+		module.exports = factory(root);
+	} else {}
+}(typeof global != 'undefined' ? global : this, function(root) {
+
+	if (root.CSS && root.CSS.escape) {
+		return root.CSS.escape;
+	}
+
+	// https://drafts.csswg.org/cssom/#serialize-an-identifier
+	var cssEscape = function(value) {
+		if (arguments.length == 0) {
+			throw new TypeError('`CSS.escape` requires an argument.');
+		}
+		var string = String(value);
+		var length = string.length;
+		var index = -1;
+		var codeUnit;
+		var result = '';
+		var firstCodeUnit = string.charCodeAt(0);
+		while (++index < length) {
+			codeUnit = string.charCodeAt(index);
+			// Note: there’s no need to special-case astral symbols, surrogate
+			// pairs, or lone surrogates.
+
+			// If the character is NULL (U+0000), then the REPLACEMENT CHARACTER
+			// (U+FFFD).
+			if (codeUnit == 0x0000) {
+				result += '\uFFFD';
+				continue;
+			}
+
+			if (
+				// If the character is in the range [\1-\1F] (U+0001 to U+001F) or is
+				// U+007F, […]
+				(codeUnit >= 0x0001 && codeUnit <= 0x001F) || codeUnit == 0x007F ||
+				// If the character is the first character and is in the range [0-9]
+				// (U+0030 to U+0039), […]
+				(index == 0 && codeUnit >= 0x0030 && codeUnit <= 0x0039) ||
+				// If the character is the second character and is in the range [0-9]
+				// (U+0030 to U+0039) and the first character is a `-` (U+002D), […]
+				(
+					index == 1 &&
+					codeUnit >= 0x0030 && codeUnit <= 0x0039 &&
+					firstCodeUnit == 0x002D
+				)
+			) {
+				// https://drafts.csswg.org/cssom/#escape-a-character-as-code-point
+				result += '\\' + codeUnit.toString(16) + ' ';
+				continue;
+			}
+
+			if (
+				// If the character is the first character and is a `-` (U+002D), and
+				// there is no second character, […]
+				index == 0 &&
+				length == 1 &&
+				codeUnit == 0x002D
+			) {
+				result += '\\' + string.charAt(index);
+				continue;
+			}
+
+			// If the character is not handled by one of the above rules and is
+			// greater than or equal to U+0080, is `-` (U+002D) or `_` (U+005F), or
+			// is in one of the ranges [0-9] (U+0030 to U+0039), [A-Z] (U+0041 to
+			// U+005A), or [a-z] (U+0061 to U+007A), […]
+			if (
+				codeUnit >= 0x0080 ||
+				codeUnit == 0x002D ||
+				codeUnit == 0x005F ||
+				codeUnit >= 0x0030 && codeUnit <= 0x0039 ||
+				codeUnit >= 0x0041 && codeUnit <= 0x005A ||
+				codeUnit >= 0x0061 && codeUnit <= 0x007A
+			) {
+				// the character itself
+				result += string.charAt(index);
+				continue;
+			}
+
+			// Otherwise, the escaped character.
+			// https://drafts.csswg.org/cssom/#escape-a-character
+			result += '\\' + string.charAt(index);
+
+		}
+		return result;
+	};
+
+	if (!root.CSS) {
+		root.CSS = {};
+	}
+
+	root.CSS.escape = cssEscape;
+	return cssEscape;
+
+}));
+
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
+
+/***/ }),
+
+/***/ "./node_modules/diagram-js/lib/util/EscapeUtil.js":
+/*!********************************************************!*\
+  !*** ./node_modules/diagram-js/lib/util/EscapeUtil.js ***!
+  \********************************************************/
+/*! exports provided: escapeCSS, escapeHTML */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "escapeHTML", function() { return escapeHTML; });
+/* harmony import */ var css_escape__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! css.escape */ "./node_modules/css.escape/css.escape.js");
+/* harmony import */ var css_escape__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(css_escape__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony reexport (default from non-harmony) */ __webpack_require__.d(__webpack_exports__, "escapeCSS", function() { return css_escape__WEBPACK_IMPORTED_MODULE_0___default.a; });
+
+
+var HTML_ESCAPE_MAP = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  '\'': '&#39;'
+};
+
+function escapeHTML(str) {
+  str = '' + str;
+
+  return str && str.replace(/[&<>"']/g, function(match) {
+    return HTML_ESCAPE_MAP[match];
+  });
+}
+
 
 /***/ }),
 
@@ -2746,6 +2915,10 @@ function merge(target) {
     }
 
     forEach(source, function (sourceVal, key) {
+      if (key === '__proto__') {
+        return;
+      }
+
       var targetVal = target[key];
 
       if (isObject(sourceVal)) {
@@ -3328,7 +3501,38 @@ function remove(el) {
 
 
 
+/***/ }),
+
+/***/ "./node_modules/webpack/buildin/global.js":
+/*!***********************************!*\
+  !*** (webpack)/buildin/global.js ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || new Function("return this")();
+} catch (e) {
+	// This works if the window reference is available
+	if (typeof window === "object") g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
 /***/ })
 
 /******/ });
-//# sourceMappingURL=client.bundle.js.map
+//# sourceMappingURL=client.js.map
