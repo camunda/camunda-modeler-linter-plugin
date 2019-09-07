@@ -3,6 +3,6 @@
 module.exports = {
   name: 'BPMN Linter',
   script: './dist/client.js',
-  style: './css/bpmn-js-bpmnlint.css',
+  style: './dist/bpmn-js-bpmnlint.css',
   menu: './menu.js'
 };

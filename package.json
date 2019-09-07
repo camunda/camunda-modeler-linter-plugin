@@ -4,7 +4,8 @@
   "description": "bpmn-js-bpmnlint as a plug-in for the Camunda Modeler",
   "main": "index.js",
   "scripts": {
-    "all": "run-s bundle",
+    "all": "run-s bundle copy-assets",
+    "copy-assets": "cpx node_modules/bpmn-js-bpmnlint/dist/assets/css/bpmn-js-bpmnlint.css dist",
     "bundle": "webpack",
     "bundle:watch": "webpack -w",
     "prepublishOnly": "run-s bundle"
