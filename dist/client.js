@@ -255,6 +255,22 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
+const persistLintingStateModule = {
+  __init__: [
+    [ 'eventBus', function(eventBus) {
+
+      eventBus.on('linting.toggle', function(event) {
+        const {
+          active
+        } = event;
+
+        setLintingActive(active);
+      });
+
+    } ]
+  ]
+}
+
 Object(camunda_modeler_plugin_helpers__WEBPACK_IMPORTED_MODULE_0__["registerClientPlugin"])(config => {
 
   const {
@@ -264,12 +280,32 @@ Object(camunda_modeler_plugin_helpers__WEBPACK_IMPORTED_MODULE_0__["registerClie
 
   return {
     ...rest,
-    additionalModules: [].concat(additionalModules || [], bpmn_js_bpmnlint__WEBPACK_IMPORTED_MODULE_1__["default"]),
+    additionalModules: [
+      ...(additionalModules || []),
+      bpmn_js_bpmnlint__WEBPACK_IMPORTED_MODULE_1__["default"],
+      persistLintingStateModule
+    ],
     linting: {
-      bpmnlint: _bpmnlintrc__WEBPACK_IMPORTED_MODULE_2__["default"]
+      bpmnlint: _bpmnlintrc__WEBPACK_IMPORTED_MODULE_2__["default"],
+      active: getLintingActive()
     }
   }
 }, 'bpmn.modeler.configure');
+
+
+// helpers ///////////////
+
+const LINTING_STATE_KEY = 'camunda-modeler-linter-plugin.active';
+
+function getLintingActive() {
+  const str = window.localStorage.getItem(LINTING_STATE_KEY);
+
+  return str && JSON.parse(str) || false;
+}
+
+function setLintingActive(active) {
+  window.localStorage.setItem(LINTING_STATE_KEY, JSON.stringify(active));
+}
 
 /***/ }),
 
