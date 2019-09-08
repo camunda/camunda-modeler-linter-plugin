@@ -6,6 +6,10 @@ All notable changes to [camunda-modeler-linter-plugin](https://github.com/bpmn-i
 
 ___Note:__ Yet to be released changes appear here._
 
+## 0.4.1
+
+* `DOCS`: update screenshot
+
 ## 0.4.0
 
 * `FEAT`: persist linting active state
