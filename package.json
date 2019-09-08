@@ -8,7 +8,7 @@
     "copy-assets": "cpx node_modules/bpmn-js-bpmnlint/dist/assets/css/bpmn-js-bpmnlint.css dist",
     "bundle": "webpack",
     "bundle:watch": "webpack -w",
-    "prepublishOnly": "run-s bundle"
+    "prepublishOnly": "run-s all"
   },
   "repository": {
     "type": "git",
