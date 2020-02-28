@@ -376,13 +376,15 @@ function Linting(
     config,
     elementRegistry,
     eventBus,
-    overlays
+    overlays,
+    translate
 ) {
   this._bpmnjs = bpmnjs;
   this._canvas = canvas;
   this._elementRegistry = elementRegistry;
   this._eventBus = eventBus;
   this._overlays = overlays;
+  this._translate = translate;
 
   this._issues = {};
 
@@ -679,7 +681,7 @@ Linting.prototype._addWarnings = function($ul, warnings) {
 Linting.prototype._addEntry = function($ul, state, entry) {
 
   var rule = entry.rule,
-      message = entry.message;
+      message = this._translate(entry.message);
 
   var icon = stateToIcon[state];
 
@@ -715,7 +717,7 @@ Linting.prototype._setButtonState = function(state, errors, warnings) {
 
   var icon = stateToIcon[state];
 
-  var html = icon + '<span>' + errors + ' Errors, ' + warnings + ' Warnings</span>';
+  var html = icon + '<span>' + this._translate('{errors} Errors, {warnings} Warnings', { errors: errors.toString(), warnings: warnings.toString() }) + '</span>';
 
   [
     'error',
@@ -764,7 +766,7 @@ Linting.prototype._createButton = function() {
   var self = this;
 
   this._button = Object(min_dom__WEBPACK_IMPORTED_MODULE_2__["domify"])(
-    '<button class="bjsl-button bjsl-button-inactive" title="Toggle linting"></button>'
+    '<button class="bjsl-button bjsl-button-inactive" title="' + this._translate('Toggle linting') + '"></button>'
   );
 
   this._button.addEventListener('click', function() {
@@ -788,7 +790,8 @@ Linting.$inject = [
   'config.linting',
   'elementRegistry',
   'eventBus',
-  'overlays'
+  'overlays',
+  'translate'
 ];
 
 var index = {
@@ -1004,7 +1007,7 @@ Linter.prototype.resolveConfig = function(name) {
       throw new Error(`unknown config <${name}>`);
     }
 
-    const actualConfig = this.cachedConfigs[id] = normalizeConfig(config, pkg);
+    const actualConfig = this.cachedConfigs[id] = this.normalizeConfig(config, pkg);
 
     return actualConfig;
   });
@@ -1078,7 +1081,7 @@ Linter.prototype.resolveConfiguredRules = function(config) {
     })
   ).then((inheritedRules) => {
 
-    const overrideRules = normalizeConfig(config, 'bpmnlint').rules;
+    const overrideRules = this.normalizeConfig(config, 'bpmnlint').rules;
 
     const rules = [ ...inheritedRules, overrideRules ].reduce((rules, currentRules) => {
       return {
@@ -1154,93 +1157,145 @@ Linter.prototype.parseRuleValue = function(value) {
   };
 };
 
-Linter.prototype.parseRuleName = function(name) {
+Linter.prototype.parseRuleName = function(name, localPackage = 'bpmnlint') {
 
-  const slashIdx = name.indexOf('/');
+  /**
+   * We recognize the following rule name patterns:
+   *
+   * {RULE_NAME} => PKG = 'bpmnlint'
+   * bpmnlint/{RULE_NAME} => PKG = 'bpmnlint'
+   * {PACKAGE_SHORTCUT}/{RULE_NAME} => PKG = 'bpmnlint-plugin-{PACKAGE_SHORTCUT}'
+   * bpmnlint-plugin-{PACKAGE_SHORTCUT}/{RULE_NAME} => PKG = 'bpmnlint-plugin-{PACKAGE_SHORTCUT}'
+   * @scope/{PACKAGE_SHORTCUT}/{RULE_NAME} => PKG = '@scope/bpmnlint-plugin-{PACKAGE_SHORTCUT}'
+   * @scope/bpmnlint-plugin-{PACKAGE_SHORTCUT}/{RULE_NAME} => PKG = '@scope/bpmnlint-plugin-{PACKAGE_SHORTCUT}'
+   */
 
-  // resolve rule as built-in, if unprefixed
-  if (slashIdx === -1) {
+  const match = /^(?:(?:(@[^/]+)\/)?([^@]{1}[^/]*)\/)?([^/]+)$/.exec(name);
+
+  if (!match) {
+    throw new Error(`unparseable rule name <${name}>`);
+  }
+
+  const [
+    _,
+    ns,
+    packageName,
+    ruleName
+  ] = match;
+
+  if (!packageName) {
     return {
-      pkg: 'bpmnlint',
-      ruleName: name
+      pkg: localPackage,
+      ruleName
     };
   }
 
-  const pkg = name.substring(0, slashIdx);
-  const ruleName = name.substring(slashIdx + 1);
+  const pkg = `${ns ? ns + '/' : '' }${prefixPackage(packageName)}`;
 
-  if (pkg === 'bpmnlint') {
-    return {
-      pkg: 'bpmnlint',
-      ruleName
-    };
-  } else {
-    return {
-      pkg: 'bpmnlint-plugin-' + pkg,
-      ruleName
-    };
-  }
+  return {
+    pkg,
+    ruleName
+  };
 };
 
 
 Linter.prototype.parseConfigName = function(name) {
 
-  const localMatch = /^bpmnlint:(.*)$/.exec(name);
+  /**
+   * We recognize the following config name patterns:
+   *
+   * bpmnlint:{CONFIG_NAME} => PKG = 'bpmnlint'
+   * plugin:{PACKAGE_SHORTCUT}/{CONFIG_NAME} => PKG = 'bpmnlint-plugin-{PACKAGE_SHORTCUT}'
+   * plugin:bpmnlint-plugin-{PACKAGE_SHORTCUT}/{CONFIG_NAME} => PKG = 'bpmnlint-plugin-{PACKAGE_SHORTCUT}'
+   * plugin:@scope/{PACKAGE_SHORTCUT}/{CONFIG_NAME} => PKG = '@scope/bpmnlint-plugin-{PACKAGE_SHORTCUT}'
+   * plugin:@scope/bpmnlint-plugin-{PACKAGE_SHORTCUT}/{CONFIG_NAME} => PKG = '@scope/bpmnlint-plugin-{PACKAGE_SHORTCUT}'
+   */
 
-  if (localMatch) {
+  const match = /^(?:(?:plugin:(?:(@[^/]+)\/)?([^@]{1}[^/]*)\/)|bpmnlint:)([^/]+)$/.exec(name);
+
+  if (!match) {
+    throw new Error(`unparseable config name <${name}>`);
+  }
+
+  const [
+    _,
+    ns,
+    packageName,
+    configName
+  ] = match;
+
+  if (!packageName) {
     return {
       pkg: 'bpmnlint',
-      configName: localMatch[1]
+      configName
     };
   }
 
-  const pluginMatch = /^plugin:([^/]+)\/(.+)$/.exec(name);
-
-  if (!pluginMatch) {
-    throw new Error(`invalid config name <${ name }>`);
-  }
+  const pkg = `${ns ? ns + '/' : '' }${prefixPackage(packageName)}`;
 
   return {
-    pkg: 'bpmnlint-plugin-' + pluginMatch[1],
-    configName: pluginMatch[2]
+    pkg,
+    configName
   };
 };
 
 
-// helpers ///////////////////////////
+Linter.prototype.getSimplePackageName = function(name) {
+
+  /**
+   * We recognize the following package name patterns:
+   *
+   * bpmnlint => PKG = 'bpmnlint'
+   * {PACKAGE_SHORTCUT} => PKG = PACKAGE_SHORTCUT
+   * bpmnlint-plugin-{PACKAGE_SHORTCUT}' => PKG = PACKAGE_SHORTCUT
+   * @scope/{PACKAGE_SHORTCUT} => PKG = '@scope/{PACKAGE_SHORTCUT}'
+   * @scope/bpmnlint-plugin-{PACKAGE_SHORTCUT}' => PKG = '@scope/PACKAGE_SHORTCUT'
+   */
+
+  const match = /^(?:(@[^/]+)\/)?([^/]+)$/.exec(name);
+
+  if (!match) {
+    throw new Error(`unparseable package name <${name}>`);
+  }
+
+  const [
+    _,
+    ns,
+    packageName
+  ] = match;
+
+  return `${ns ? ns + '/' : '' }${unprefixPackage(packageName)}`;
+};
+
 
 /**
  * Validate and return validated config.
  *
  * @param  {Object} config
- * @param  {String} pkg
+ * @param  {String} localPackage
  *
  * @return {Object} validated config
  */
-function normalizeConfig(config, pkg) {
+Linter.prototype.normalizeConfig = function(config, localPackage) {
 
   const rules = config.rules || {};
-
-  const rulePrefix = pkg.startsWith('bpmnlint-plugin-') && pkg.replace('bpmnlint-plugin-', '');
 
   const validatedRules = Object.keys(rules).reduce((normalizedRules, name) => {
 
     const value = rules[name];
 
-    // drop bpmnlint prefix, if existing
-    if (name.startsWith('bpmnlint/')) {
-      name = name.replace('bpmnlint/', '');
-    } else
+    const {
+      pkg,
+      ruleName
+    } = this.parseRuleName(name, localPackage);
 
-    if (rulePrefix) {
+    const normalizedName = (
+      pkg === 'bpmnlint'
+        ? ruleName
+        : `${this.getSimplePackageName(pkg)}/${ruleName}`
+    );
 
-      // prefix local rule definition
-      if (!name.startsWith(rulePrefix)) {
-        name = `${rulePrefix}/${name}`;
-      }
-    }
-
-    normalizedRules[name] = value;
+    normalizedRules[normalizedName] = value;
 
     return normalizedRules;
   }, {});
@@ -1249,6 +1304,32 @@ function normalizeConfig(config, pkg) {
     ...config,
     rules: validatedRules
   };
+};
+
+
+// helpers ///////////////////////////
+
+function prefixPackage(pkg) {
+
+  if (pkg === 'bpmnlint') {
+    return 'bpmnlint';
+  }
+
+  if (pkg.startsWith('bpmnlint-plugin-')) {
+    return pkg;
+  }
+
+  return `bpmnlint-plugin-${pkg}`;
+}
+
+
+function unprefixPackage(pkg) {
+
+  if (pkg.startsWith('bpmnlint-plugin-')) {
+    return pkg.substring('bpmnlint-plugin-'.length);
+  }
+
+  return pkg;
 }
 
 /***/ }),
