@@ -1,5 +1,6 @@
 {
   "extends": [
-    "bpmnlint:recommended"
+    "bpmnlint:recommended",
+    "plugin:camunda/recommended"
   ]
 }

@@ -127,6 +127,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var bpmnlint_rules_start_event_required__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(bpmnlint_rules_start_event_required__WEBPACK_IMPORTED_MODULE_13__);
 /* harmony import */ var bpmnlint_rules_sub_process_blank_start_event__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! bpmnlint/rules/sub-process-blank-start-event */ "./node_modules/bpmnlint/rules/sub-process-blank-start-event.js");
 /* harmony import */ var bpmnlint_rules_sub_process_blank_start_event__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(bpmnlint_rules_sub_process_blank_start_event__WEBPACK_IMPORTED_MODULE_14__);
+/* harmony import */ var bpmnlint_plugin_camunda_rules_avoid_lanes__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! bpmnlint-plugin-camunda/rules/avoid-lanes */ "./node_modules/bpmnlint-plugin-camunda/rules/avoid-lanes.js");
+/* harmony import */ var bpmnlint_plugin_camunda_rules_avoid_lanes__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(bpmnlint_plugin_camunda_rules_avoid_lanes__WEBPACK_IMPORTED_MODULE_15__);
+/* harmony import */ var bpmnlint_plugin_camunda_rules_forking_conditions__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! bpmnlint-plugin-camunda/rules/forking-conditions */ "./node_modules/bpmnlint-plugin-camunda/rules/forking-conditions.js");
+/* harmony import */ var bpmnlint_plugin_camunda_rules_forking_conditions__WEBPACK_IMPORTED_MODULE_16___default = /*#__PURE__*/__webpack_require__.n(bpmnlint_plugin_camunda_rules_forking_conditions__WEBPACK_IMPORTED_MODULE_16__);
+/* harmony import */ var bpmnlint_plugin_camunda_rules_no_collapsed_sub_processes__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! bpmnlint-plugin-camunda/rules/no-collapsed-sub-processes */ "./node_modules/bpmnlint-plugin-camunda/rules/no-collapsed-sub-processes.js");
+/* harmony import */ var bpmnlint_plugin_camunda_rules_no_collapsed_sub_processes__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(bpmnlint_plugin_camunda_rules_no_collapsed_sub_processes__WEBPACK_IMPORTED_MODULE_17__);
 
 var cache = {};
 
@@ -172,7 +178,10 @@ var rules = {
   "single-blank-start-event": "error",
   "single-event-definition": "error",
   "start-event-required": "error",
-  "sub-process-blank-start-event": "error"
+  "sub-process-blank-start-event": "error",
+  "camunda/avoid-lanes": "warn",
+  "camunda/forking-conditions": "error",
+  "camunda/no-collapsed-sub-processes": "error"
 };
 
 var config = {
@@ -234,6 +243,15 @@ cache['bpmnlint/start-event-required'] = bpmnlint_rules_start_event_required__WE
 
 
 cache['bpmnlint/sub-process-blank-start-event'] = bpmnlint_rules_sub_process_blank_start_event__WEBPACK_IMPORTED_MODULE_14___default.a;
+
+
+cache['bpmnlint-plugin-camunda/avoid-lanes'] = bpmnlint_plugin_camunda_rules_avoid_lanes__WEBPACK_IMPORTED_MODULE_15___default.a;
+
+
+cache['bpmnlint-plugin-camunda/forking-conditions'] = bpmnlint_plugin_camunda_rules_forking_conditions__WEBPACK_IMPORTED_MODULE_16___default.a;
+
+
+cache['bpmnlint-plugin-camunda/no-collapsed-sub-processes'] = bpmnlint_plugin_camunda_rules_no_collapsed_sub_processes__WEBPACK_IMPORTED_MODULE_17___default.a;
 
 /***/ }),
 
@@ -802,6 +820,130 @@ var index = {
 
 /* harmony default export */ __webpack_exports__["default"] = (index);
 //# sourceMappingURL=index.esm.js.map
+
+
+/***/ }),
+
+/***/ "./node_modules/bpmnlint-plugin-camunda/rules/avoid-lanes.js":
+/*!*******************************************************************!*\
+  !*** ./node_modules/bpmnlint-plugin-camunda/rules/avoid-lanes.js ***!
+  \*******************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const {
+  is
+} = __webpack_require__(/*! bpmnlint-utils */ "./node_modules/bpmnlint-utils/dist/index.esm.js");
+
+
+/**
+ * Rule that reports the usage of lanes.
+ */
+module.exports = function() {
+
+  function check(node, reporter) {
+    if (is(node, 'bpmn:Lane')) {
+      reporter.report(node.id, 'lanes should be avoided');
+    }
+  }
+
+  return {
+    check: check
+  };
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/bpmnlint-plugin-camunda/rules/forking-conditions.js":
+/*!**************************************************************************!*\
+  !*** ./node_modules/bpmnlint-plugin-camunda/rules/forking-conditions.js ***!
+  \**************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const {
+  is
+} = __webpack_require__(/*! bpmnlint-utils */ "./node_modules/bpmnlint-utils/dist/index.esm.js");
+
+/**
+ * A rule that checks that sequence flows after
+ * an exclusive forking gateway have conditions
+ * attached.
+ */
+module.exports = function() {
+
+  function check(node, reporter) {
+
+    if (!is(node, 'bpmn:ExclusiveGateway')) {
+      return;
+    }
+
+    const outgoing = node.outgoing || [];
+
+    outgoing.forEach((flow) => {
+      const missingCondition = (
+        !hasCondition(flow) &&
+        !isDefaultFlow(node, flow)
+      );
+
+      if (missingCondition) {
+        reporter.report(flow.id, 'Sequence flow is missing condition');
+      }
+    });
+  }
+
+  return {
+    check
+  };
+
+};
+
+
+// helpers /////////////////////////////
+
+function hasCondition(flow) {
+  return !!flow.conditionExpression;
+}
+
+function isDefaultFlow(node, flow) {
+  return node['default'] === flow;
+}
+
+/***/ }),
+
+/***/ "./node_modules/bpmnlint-plugin-camunda/rules/no-collapsed-sub-processes.js":
+/*!**********************************************************************************!*\
+  !*** ./node_modules/bpmnlint-plugin-camunda/rules/no-collapsed-sub-processes.js ***!
+  \**********************************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const {
+  is
+} = __webpack_require__(/*! bpmnlint-utils */ "./node_modules/bpmnlint-utils/dist/index.esm.js");
+
+
+/**
+ * Rule that reports the usage of collapsed sub-processes.
+ */
+module.exports = function() {
+
+  function check(node, reporter) {
+    if (is(node, 'bpmndi:BPMNShape')) {
+
+      const bpmnElement = node.bpmnElement;
+
+      if (is(bpmnElement, 'bpmn:SubProcess') && !node.isExpanded) {
+        reporter.report(bpmnElement.id, 'Sub-process should be expanded');
+      }
+    }
+  }
+
+  return {
+    check: check
+  };
+};
 
 
 /***/ }),
