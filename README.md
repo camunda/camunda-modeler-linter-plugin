@@ -9,7 +9,7 @@
 
 ## Overriding Provided Rules
 
-This plug-ins uses the [recommended bpmnlint rules](./.bpmnlintrc).
+This plug-ins uses the [recommended bpmnlint and Camunda rules](./.bpmnlintrc).
 
 You may override this via your own Camunda Modeler client plug-in as shown below:
 
