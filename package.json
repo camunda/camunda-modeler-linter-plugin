@@ -1,6 +1,6 @@
 {
   "name": "camunda-modeler-linter-plugin",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "bpmn-js-bpmnlint as a plug-in for the Camunda Modeler",
   "main": "index.js",
   "scripts": {
