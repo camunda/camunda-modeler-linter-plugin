@@ -875,11 +875,11 @@ module.exports = function() {
 
   function check(node, reporter) {
 
-    if (!is(node, 'bpmn:ExclusiveGateway')) {
+    const outgoing = node.outgoing || [];
+
+    if (!is(node, 'bpmn:ExclusiveGateway') || outgoing.length < 2) {
       return;
     }
-
-    const outgoing = node.outgoing || [];
 
     outgoing.forEach((flow) => {
       const missingCondition = (
