@@ -127,14 +127,16 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var bpmnlint_rules_start_event_required__WEBPACK_IMPORTED_MODULE_13___default = /*#__PURE__*/__webpack_require__.n(bpmnlint_rules_start_event_required__WEBPACK_IMPORTED_MODULE_13__);
 /* harmony import */ var bpmnlint_rules_sub_process_blank_start_event__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! bpmnlint/rules/sub-process-blank-start-event */ "./node_modules/bpmnlint/rules/sub-process-blank-start-event.js");
 /* harmony import */ var bpmnlint_rules_sub_process_blank_start_event__WEBPACK_IMPORTED_MODULE_14___default = /*#__PURE__*/__webpack_require__.n(bpmnlint_rules_sub_process_blank_start_event__WEBPACK_IMPORTED_MODULE_14__);
-/* harmony import */ var bpmnlint_plugin_camunda_rules_avoid_lanes__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! bpmnlint-plugin-camunda/rules/avoid-lanes */ "./node_modules/bpmnlint-plugin-camunda/rules/avoid-lanes.js");
-/* harmony import */ var bpmnlint_plugin_camunda_rules_avoid_lanes__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(bpmnlint_plugin_camunda_rules_avoid_lanes__WEBPACK_IMPORTED_MODULE_15__);
-/* harmony import */ var bpmnlint_plugin_camunda_rules_forking_conditions__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! bpmnlint-plugin-camunda/rules/forking-conditions */ "./node_modules/bpmnlint-plugin-camunda/rules/forking-conditions.js");
-/* harmony import */ var bpmnlint_plugin_camunda_rules_forking_conditions__WEBPACK_IMPORTED_MODULE_16___default = /*#__PURE__*/__webpack_require__.n(bpmnlint_plugin_camunda_rules_forking_conditions__WEBPACK_IMPORTED_MODULE_16__);
-/* harmony import */ var bpmnlint_plugin_camunda_rules_no_collapsed_sub_processes__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! bpmnlint-plugin-camunda/rules/no-collapsed-sub-processes */ "./node_modules/bpmnlint-plugin-camunda/rules/no-collapsed-sub-processes.js");
-/* harmony import */ var bpmnlint_plugin_camunda_rules_no_collapsed_sub_processes__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(bpmnlint_plugin_camunda_rules_no_collapsed_sub_processes__WEBPACK_IMPORTED_MODULE_17__);
+/* harmony import */ var bpmnlint_rules_superfluous_gateway__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! bpmnlint/rules/superfluous-gateway */ "./node_modules/bpmnlint/rules/superfluous-gateway.js");
+/* harmony import */ var bpmnlint_rules_superfluous_gateway__WEBPACK_IMPORTED_MODULE_15___default = /*#__PURE__*/__webpack_require__.n(bpmnlint_rules_superfluous_gateway__WEBPACK_IMPORTED_MODULE_15__);
+/* harmony import */ var bpmnlint_plugin_camunda_rules_avoid_lanes__WEBPACK_IMPORTED_MODULE_16__ = __webpack_require__(/*! bpmnlint-plugin-camunda/rules/avoid-lanes */ "./node_modules/bpmnlint-plugin-camunda/rules/avoid-lanes.js");
+/* harmony import */ var bpmnlint_plugin_camunda_rules_avoid_lanes__WEBPACK_IMPORTED_MODULE_16___default = /*#__PURE__*/__webpack_require__.n(bpmnlint_plugin_camunda_rules_avoid_lanes__WEBPACK_IMPORTED_MODULE_16__);
+/* harmony import */ var bpmnlint_plugin_camunda_rules_forking_conditions__WEBPACK_IMPORTED_MODULE_17__ = __webpack_require__(/*! bpmnlint-plugin-camunda/rules/forking-conditions */ "./node_modules/bpmnlint-plugin-camunda/rules/forking-conditions.js");
+/* harmony import */ var bpmnlint_plugin_camunda_rules_forking_conditions__WEBPACK_IMPORTED_MODULE_17___default = /*#__PURE__*/__webpack_require__.n(bpmnlint_plugin_camunda_rules_forking_conditions__WEBPACK_IMPORTED_MODULE_17__);
+/* harmony import */ var bpmnlint_plugin_camunda_rules_no_collapsed_sub_processes__WEBPACK_IMPORTED_MODULE_18__ = __webpack_require__(/*! bpmnlint-plugin-camunda/rules/no-collapsed-sub-processes */ "./node_modules/bpmnlint-plugin-camunda/rules/no-collapsed-sub-processes.js");
+/* harmony import */ var bpmnlint_plugin_camunda_rules_no_collapsed_sub_processes__WEBPACK_IMPORTED_MODULE_18___default = /*#__PURE__*/__webpack_require__.n(bpmnlint_plugin_camunda_rules_no_collapsed_sub_processes__WEBPACK_IMPORTED_MODULE_18__);
 
-var cache = {};
+const cache = {};
 
 /**
  * A resolver that caches rules and configuration as part of the bundle,
@@ -161,9 +163,9 @@ Resolver.prototype.resolveConfig = function(pkg, configName) {
   );
 };
 
-var resolver = new Resolver();
+const resolver = new Resolver();
 
-var rules = {
+const rules = {
   "conditional-flows": "error",
   "end-event-required": "error",
   "event-sub-process-typed-start-event": "error",
@@ -179,16 +181,17 @@ var rules = {
   "single-event-definition": "error",
   "start-event-required": "error",
   "sub-process-blank-start-event": "error",
+  "superfluous-gateway": "warning",
   "camunda/avoid-lanes": "warn",
   "camunda/forking-conditions": "error",
   "camunda/no-collapsed-sub-processes": "error"
 };
 
-var config = {
+const config = {
   rules: rules
 };
 
-var bundle = {
+const bundle = {
   resolver: resolver,
   config: config
 };
@@ -245,13 +248,16 @@ cache['bpmnlint/start-event-required'] = bpmnlint_rules_start_event_required__WE
 cache['bpmnlint/sub-process-blank-start-event'] = bpmnlint_rules_sub_process_blank_start_event__WEBPACK_IMPORTED_MODULE_14___default.a;
 
 
-cache['bpmnlint-plugin-camunda/avoid-lanes'] = bpmnlint_plugin_camunda_rules_avoid_lanes__WEBPACK_IMPORTED_MODULE_15___default.a;
+cache['bpmnlint/superfluous-gateway'] = bpmnlint_rules_superfluous_gateway__WEBPACK_IMPORTED_MODULE_15___default.a;
 
 
-cache['bpmnlint-plugin-camunda/forking-conditions'] = bpmnlint_plugin_camunda_rules_forking_conditions__WEBPACK_IMPORTED_MODULE_16___default.a;
+cache['bpmnlint-plugin-camunda/avoid-lanes'] = bpmnlint_plugin_camunda_rules_avoid_lanes__WEBPACK_IMPORTED_MODULE_16___default.a;
 
 
-cache['bpmnlint-plugin-camunda/no-collapsed-sub-processes'] = bpmnlint_plugin_camunda_rules_no_collapsed_sub_processes__WEBPACK_IMPORTED_MODULE_17___default.a;
+cache['bpmnlint-plugin-camunda/forking-conditions'] = bpmnlint_plugin_camunda_rules_forking_conditions__WEBPACK_IMPORTED_MODULE_17___default.a;
+
+
+cache['bpmnlint-plugin-camunda/no-collapsed-sub-processes'] = bpmnlint_plugin_camunda_rules_no_collapsed_sub_processes__WEBPACK_IMPORTED_MODULE_18___default.a;
 
 /***/ }),
 
@@ -1500,7 +1506,21 @@ class Reporter {
 
 module.exports = function testRule({ moddleRoot, rule }) {
   const reporter = new Reporter({ rule, moddleRoot });
-  traverse(moddleRoot, node => rule.check(node, reporter));
+
+  const check = rule.check;
+
+  const enter = check && check.enter || check;
+  const leave = check && check.leave;
+
+  if (!enter && !leave) {
+    throw new Error('no check implemented');
+  }
+
+  traverse(moddleRoot, {
+    enter: enter ? (node) => enter(node, reporter) : null,
+    leave: leave ? (node) => leave(node, reporter) : null
+  });
+
   return reporter.messages;
 };
 
@@ -1519,34 +1539,39 @@ module.exports = function testRule({ moddleRoot, rule }) {
  * and call the passed visitor fn.
  *
  * @param {ModdleElement} element
- * @param {Function} fn
+ * @param {{ enter?: Function; leave?: Function }} options
  */
-module.exports = function traverse(element, fn) {
-  fn(element);
+module.exports = function traverse(element, options) {
 
-  var descriptor = element.$descriptor;
+  const enter = options.enter || null;
+  const leave = options.leave || null;
 
-  if (descriptor.isGeneric) {
-    return;
+  const enterSubTree = enter && enter(element);
+
+  const descriptor = element.$descriptor;
+
+  if (enterSubTree !== false && !descriptor.isGeneric) {
+
+    const containedProperties = descriptor.properties.filter(p => {
+      return !p.isAttr && !p.isReference && p.type !== 'String';
+    });
+
+    containedProperties.forEach(p => {
+      if (p.name in element) {
+        const propertyValue = element[p.name];
+
+        if (p.isMany) {
+          propertyValue.forEach(child => {
+            traverse(child, options);
+          });
+        } else {
+          traverse(propertyValue, options);
+        }
+      }
+    });
   }
 
-  var containedProperties = descriptor.properties.filter(p => {
-    return !p.isAttr && !p.isReference && p.type !== 'String';
-  });
-
-  containedProperties.forEach(p => {
-    if (p.name in element) {
-      const propertyValue = element[p.name];
-
-      if (p.isMany) {
-        propertyValue.forEach(child => {
-          traverse(child, fn);
-        });
-      } else {
-        traverse(propertyValue, fn);
-      }
-    }
-  });
+  leave && leave(element);
 };
 
 
@@ -1831,6 +1856,7 @@ module.exports = function() {
 
     // ignore sub-processes
     if (is(node, 'bpmn:SubProcess')) {
+
       // TODO(nikku): better ignore expanded sub-processes only
       return;
     }
@@ -1970,8 +1996,6 @@ module.exports = function() {
 
       const sourceId = node.sourceRef.id;
       const targetId = node.targetRef.id;
-
-      console.log(sourceId, targetId);
 
       if (!outgoingReported[sourceId]) {
         reporter.report(sourceId, 'Duplicate outgoing sequence flows');
@@ -2298,6 +2322,46 @@ module.exports = function() {
         reporter.report(flowElement.id, 'Start event must be blank');
       }
     });
+  }
+
+  return {
+    check
+  };
+
+};
+
+/***/ }),
+
+/***/ "./node_modules/bpmnlint/rules/superfluous-gateway.js":
+/*!************************************************************!*\
+  !*** ./node_modules/bpmnlint/rules/superfluous-gateway.js ***!
+  \************************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+const {
+  is
+} = __webpack_require__(/*! bpmnlint-utils */ "./node_modules/bpmnlint-utils/dist/index.esm.js");
+
+/**
+ * A rule that checks, whether a gateway has only one source and target.
+ *
+ * Those gateways are superfluous since they don't do anything.
+ */
+module.exports = function() {
+
+  function check(node, reporter) {
+
+    if (!is(node, 'bpmn:Gateway')) {
+      return;
+    }
+
+    const incoming = node.incoming || [];
+    const outgoing = node.outgoing || [];
+
+    if (incoming.length === 1 && outgoing.length === 1) {
+      reporter.report(node.id, 'Gateway is superfluous. It only has one source and target.');
+    }
   }
 
   return {
