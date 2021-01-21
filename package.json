@@ -23,7 +23,7 @@
   "license": "MIT",
   "devDependencies": {
     "bpmn-js-bpmnlint": "^0.14.0",
-    "bpmnlint": "^6.3.0",
+    "bpmnlint": "^7.1.0",
     "bpmnlint-loader": "^0.1.4",
     "bpmnlint-plugin-camunda": "^0.4.2",
     "camunda-modeler-plugin-helpers": "^3.1.0",
