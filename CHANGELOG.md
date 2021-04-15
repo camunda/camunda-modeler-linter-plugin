@@ -6,7 +6,11 @@ All notable changes to [camunda-modeler-linter-plugin](https://github.com/bpmn-i
 
 ___Note:__ Yet to be released changes appear here._
 
-* `CHORE`: update to `bpmnlint@7.1.0`
+## 0.6.0
+
+* `CHORE`: update to `bpmnlint@7.2.0`
+* `CHORE`: update to `bpmnlint-plugin-camunda@0.5.0`
+* `CHORE`: update to `bpmn-js-bpmnlint@0.17.0`
 
 ## 0.5.1
 
