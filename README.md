@@ -1,4 +1,4 @@
-> This plugin was replaced by the built-in linting feature of [Camunda Modeler v5.3](https://github.com/camunda/camunda-modeler/blob/develop/CHANGELOG.md#530). Check out the [custom lint rules plugin](https://github.com/camunda/camunda-modeler-custom-linter-rules-plugin) to learn how to add custom lint rules to the built-in linting feature.
+> **This plugin was replaced by the built-in linting feature of [Camunda Modeler v5.3](https://github.com/camunda/camunda-modeler/blob/develop/CHANGELOG.md#530)**. Check out the [custom lint rules plugin](https://github.com/camunda/camunda-modeler-custom-linter-rules-plugin) to learn how to add custom lint rules to the built-in linting feature.
 
 
 # camunda-modeler-linter-plugin
